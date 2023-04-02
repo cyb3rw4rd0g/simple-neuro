@@ -1,41 +1,31 @@
 import numpy as np
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+def sigmoid(x, der=False):
+	if der:
+		return x * (1 - x)
+	return 1 / (1 + np.exp(-x))
 
-training_inputs = np.array([[0,0,1],
-                           [1,1,1],
-                           [1,0,1],
-                           [0,1,1]])
 
-training_outputs = np.array([[0,1,1,0]]).T
+x = np.array([[1, 0, 1],
+		[1, 0, 1],
+		[0, 1, 0],
+		[0, 1, 0]])
+
+
+y = np.array([[0, 0, 1, 1]]).T
 
 np.random.seed(1)
 
-synaptic_weights = 2 * np.random.random((3,1)) - 1
+syn0 = 2 * np.random.random((3, 1)) - 1
 
-print("Случайные веса:")
-print(synaptic_weights)
+l1 = []
 
-# Метод обучения сети
-for i in range(100000):
-    input_layer = training_inputs
-    outputs = sigmoid( np.dot(input_layer, synaptic_weights) )
+for iter in range(20000):
+	l0 = x
+	l1 = sigmoid(np.dot(l0, syn0))
+	l1_error = y - l1
+	l1_delta = l1_error * sigmoid(l1, True)
+	syn0 += np.dot(l0.T, l1_delta)
 
-    err = training_inputs - outputs
-    adjustments = np.dot( input_layer.T, err * (outputs * (1 - outputs)) )
-
-    synaptic_weights +- adjustments
-
-
-print ( "Веса после обучения:")
-print (synaptic_weights)
-print("Результат после обучения:")
-print(outputs)
-
-#Тестирование
-new_inputs = np.array([1,1,0])
-output = sigmoid( np.dot( new_inputs, synaptic_weights))
-
-print ( "Новая ситуация:" )
-print(output)
+print("Выходные данные после тренеровки:")
+print(l1)
